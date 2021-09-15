@@ -1,0 +1,9 @@
+transformers==4.4.2
+uvicorn==0.13.4
+Flask==1.1.2
+Flask-Bootstrap==3.3.7.1
+fastapi==0.63.0
+vkwave==0.2.10
+ftfy
+regex
+tqdm
