@@ -62,27 +62,30 @@ def change_title(event, group_name):
 
 
 def text_preprocess(inputs):
+    size = 0
+
     inputs_text = ''
-    for input_ in inputs:
+    for size, input_ in enumerate(inputs):
         length_param = '-'
         inputs_text += f"|{input_['speaker']}|{length_param}|{input_['text']}"
+
+        if len(inputs_text) > params.get('max_length') - 5:
+            break
     inputs_text += f"|1|{params['length_generate']}|"
 
-    if len(inputs_text) > params.get('max_length'):
-        inputs_text = "|" + "|".join(inputs_text[-int(params.get('max_length')):].split('|')[1:])
-
-    return inputs_text
+    return inputs_text, size
 
 
 async def send_message(event, group_id, dialog_history_array):
     params.update({'temperature': group_answer_temp.get(group_id)})
 
-    dialog_history = text_preprocess(dialog_history_array)
+    dialog_history,size = text_preprocess(dialog_history_array)
     response = process(dialog_history, params)
     bot_message = response.get('outputs')
 
     dialog_history_array.append({'speaker': 1, 'text': bot_message})
-    group_dict.update({group_id: dialog_history_array})
+
+    group_dict.update({group_id: dialog_history_array[-size:]})
     await event.answer(message=bot_message)
 
 
